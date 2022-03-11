@@ -1,11 +1,12 @@
 <?php
-/* Objetivo: Arquivo de rota. Segementa as ações encaminhabadas pela View (dados de um form, listagem de dados, ação de ou atualizar)
-          Também responsável por encaminhar as solicitações para o controller.
-          Criando arquivo pensando em reutilizar o arquivo para diferentes ações. Ou seja, ter apenas um arquivo de rota
-Autor: lais
-Data: 04/03/22
-Versão: Herbert Richers (1.0)
-*/
+/*******************************************************************************************************************************************
+*Objetivo: Arquivo de rota. Segementa as ações encaminhabadas pela View (dados de um form, listagem de dados, ação de ou atualizar)
+*          Também responsável por encaminhar as solicitações para o controller.
+*          Criando arquivo pensando em reutilizar o arquivo para diferentes ações. Ou seja, ter apenas um arquivo de rota
+*Autor: lais
+*Data: 04/03/22
+*Versão: Herbert Richers (1.0)
+********************************************************************************************************************************************/
 
 
 
@@ -20,12 +21,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     //Recebendo dados via url (get) e qual ação será realizada
     $identificador= strtoupper($_GET['identificador']);
-    $action = $_GET['action']; 
+    $action = strtoupper($_GET['action']); 
 
     //Validação de quem esta solicitando dados para o arquivo rota
     switch ($identificador) {
         case 'CONTATOS':
-            echo('chamando a controller de contatos');
+            //import da controller Contatos
+            require_once('controller/controllerContatos.php');
+
+            if ($action =='INSERIR') {
+                
+                //função inserirContatos() do arq controller
+                inserirContatos($_POST);
+            }
             break;    
     }
 
@@ -48,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 /* ########## ANOTAÇÕES ##########
-
+ATENÇÃO A ESTRUTURA <ACTION> DO HTML NÃO SE COMUNICA COM A ESTRUTURA <FUNCTION> QUE PRECISAM VALIDAR O SISTEMA
 
 1: ESTRUTURA DE DECISÃO. PARA VERIFICAR SE O METODO QUE CHEGA AO BACK-END É POST ou GET
     *****Post*****
@@ -64,8 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $identificador= (string)null; 
 
 3: ENVIO DE DADOS VIA POST E GET
-    //get usado para pegar dados digitados pelo usuário e envia para o arquivo rota
-    //post usado para pegar dados digitados pelo usuário e envia para o db
+    //get usado para pegar dados digitados pelo usuário e envia para o arquivo rota para que ele envie para controller validar
+    //post usado para pegar dados digitados pelo usuário para o arquivo rota usado. Ele é um array, amarzena os dados para o get poder manipular
 
         SÓ É POSSÍVEL USAR/RECUPERAR OS DADOS DO USUÁRIO DESSA MANEIRA SE O <METHOD> FOR <POST> no <form>
         O html esta trabalhando no post e o programador esta forçando o get para os dados serem usados no arquivo rota DO JEITO QUE O PROGRAMADOR QUISER
@@ -79,6 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
  
         Ex:
         <form  action="arquivoDeRedirecionamento.php$?identificador=contatos&action=inserir" name="frmCadastro" method="post" >  
+
+        TODOS OS DADOS DIGITADOS PELO USUARIO CHEGAM VIA POST E SÃO VALIDADOS VIA GET  
         
 4: RECEBENDO DADOS VIA URL (GET) E IDETIFICANDO A AÇÃO QUE SERÁ REALIZADA 
         $action = $_GET['identificador'];
@@ -91,6 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo('chamando a controller de contatos')
             break;    
     }
+
+
         
 */
 

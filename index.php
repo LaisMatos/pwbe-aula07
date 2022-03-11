@@ -14,7 +14,7 @@
                 <h1> Cadastro de Contatos </h1>
             </div>
             <div id="cadastroInformacoes">
-                <form  action="arquivoDeRedirecionamento.php?identificador=contatos&action=inserir" name="frmCadastro" method="post" >
+                <form  action="arquivoDeRedirecionamento.php?identificador=contatos&action=inserir" name="frmCadastro" method="post" > <!-- identificação p/ arq de rota e requisições (o que quer fazer)-->
                     <div class="campos">
                         <div class="cadastroInformacoesPessoais">
                             <label> Nome: </label>
