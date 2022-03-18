@@ -29,19 +29,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             //import da controller Contatos
             require_once('controller/controllerContatos.php');
 
+            //identificação do tipo de ação que será realizada
             if ($action =='INSERIR') {
                 
-                //função inserirContatos() do arq controller
-                inserirContatos($_POST);
+                // chama função de inserir na controller
+                $resposta=inserirContatos($_POST);
+
+                //parte01: função inserirContatos($_POST) do arq controller
+                //parte02: validação do tipo de dados que a controller retornou
+                if (is_bool($resposta)){ //parte02: se for booleano
+                    
+                    //verificar se o retorno foi verdadeiro
+                    if ($resposta) {
+                        //parte01: REDIRECIONANDO PARA PÁGINA INICIAL VIA JS usando <window.location.href='index.php>
+                        echo("<script>alert('REGISTRO INSERIDO COM SUCESSO');
+                        window.location.href='index.php';</script>");
+                    
+                    
+                    }
+                  //se retornar um array, então houve um erro de processo de inserção
+                } elseif (is_array($resposta)) {
+                    echo("<script>
+                        alert('".$resposta['message']."');
+                        window.history.back();
+                    </script>");    
+                    
+                }
             }
-            break;    
+        
+        break;    
     }
 
 
 
 }
 
+/* ###### ANOTAÇÃO ######
 
+REDIRECIONANDO PARA PÁGINA INICIAL VIA JS
+window.location.href='index.php'
+
+
+*/
 
 
 

@@ -1,7 +1,7 @@
 <?php
 
 /********************************************************************************************************************
-*Objetivo: Arquivo responsável pela manipulação de dados de contatos.Também fará a conexão entre a View e a Model.
+*Objetivo: Responsável pela manipulação de dados de contatos.Também fará a conexão entre a View e a Model.
 *Autor: lais
 *Data: 04/03/22
 *Versão: Herbert Richers (1.0)
@@ -35,11 +35,18 @@ function inserirContatos($dadosContato){
 
             //imput do contato.php. importa está aqui para só chamar o arquivo contato.php depois de validar
             require_once('model/bd/contato.php');
-            //chamando a função insertContato() que está no aquivo contato.php e passa os dados do $arrayDados para alimentar o banco de dados
-            insertContato($arrayDados);
-
-        }else {
-            echo('problemas');
+            
+            //parte01: chamando a função insertContato() que está no aquivo contato.php e passa os dados do $arrayDados para alimentar o banco de dados --> insertContato($arrayDados);
+            //parte02: tratamento de erro caso dado não tenha sido inserido no banco de dados 
+            if (insertContato($arrayDados)) {
+                return true;
+            } 
+            else {
+                return array('idErro' =>1,'message'=> 'NÃO FOI POSSÍVEL INSERIR OS DADOS NO BANCO DE DADOS');
+           }
+        //tratamento de erro para campo não preenchido
+        }else{
+            return array('idErro' =>2,'message' => 'EXISTEM CAMPOS OBRIGATÓRIOS NÃO PREENCHIDOS.'); 
         }
     }
         
@@ -56,6 +63,21 @@ function excluirContatos(){
 
 //fun solicita dados de model e encaminha a lista de contatos para a View
 function listarContatos(){
+
+    //import do arquivo contatp.php para buscar os dados do banco de dados
+    require_once('model/bd/contato.php');
+
+    //chama a função selectAllContatos(), que chamará os dados do banco de dados
+    $dados= selectAllContato();
+
+    //retorno de dados
+    if (!empty($dados)) {
+       return $dados;
+    }else {
+        return false;
+    }
+
+
 }
 
 

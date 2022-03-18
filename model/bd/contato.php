@@ -33,8 +33,18 @@ function insertContato($dadosContato){ //quem traz os dados do array selecionand
             '".$dadosContato['observacao']."');"
             ;
     
-   //execução do script no banco de dados
-    mysqli_query($conexao,$sql);
+   //parte1: execução do script no banco de dados --> mysqli_query($conexao,$sql) //mysqli_query retorna um booleno
+   //parte2: verificação se o script sql esta correto
+    if (mysqli_query($conexao,$sql)){  
+        //verificação se uma linha foi acrescentada no banco
+        if (mysqli_affected_rows($conexao)) { //verifica se teve alguma linha no baco afetada <mysqli_affected_rows>
+            return true;
+        }else {
+            return false;
+        }
+    }else{
+        return false;
+    } 
 
 }
 
@@ -50,7 +60,37 @@ function deleteContato(){
 
 //functio para listar todos os contatos dos bancos de dados
 function selectAllContato(){
+    //estabelecendo conecxão com a função conexaoMysql();
+    $conexao= conexaoMysql();
     
+    //criando script para listar todos os dados do banco de dados 
+    $sql="select*from tblContatos";
+    $result = mysqli_query($conexao,$sql);
+
+    //valida se o banco de dados retornou registros
+    if ($result) {
+        
+        $cont=0;
+
+        //armazenando array convertido (convertido usando a estrutura fetch)
+        while ($rsDados = mysqli_fetch_assoc($result)) {
+            
+            //Extraindo os dados da estrutura <fecth_assoc> //criar um array com os dados do banco de dados
+            //array baseado em indice e com chaves
+            $arrayDados[$cont]=array(
+                "nome" =>$rsDados['nome'],
+                "telefone" =>$rsDados['telefone'],
+                "celular" =>$rsDados['celular'],
+                "email" =>$rsDados['email'],
+                "obs" =>$rsDados['obs']
+            );
+            $cont++;
+        }
+        //retornando os dados do array
+        return $arrayDados;
+    }
+    
+
 }
 
 /*
@@ -58,9 +98,7 @@ function selectAllContato(){
 1. criação de funções
 3. passar argumentos
 4. import das funções ao banco de dados usando <require_once>
-5.
-6.
-7.
+
 
 
 sintaxe: '".$nomeDaVariavel['ChaveDoArray']."' 
@@ -88,9 +126,16 @@ $sql="
             
      ";
 
+Ao mandar um script para o banco do tipo Delet, Update e ---- o banco não retorna os dados modificados. Só retorna se deu erro!
+Só o Select que retorna dados.
 
 
-
+<$rsDados> --> array que amarzenará os dados convertidos do banco de dados
+ 
+estrutura <while> para gerenciar a quantidade de vezes que deverá ser feita a repetição de itens do array
+while ($rsDados = mysqli_fetch_assoc($result)) {
+            
+        }
 
 
 

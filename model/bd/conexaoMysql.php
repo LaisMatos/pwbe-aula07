@@ -16,7 +16,6 @@ const DATABASE = 'dbContatos'; //nome do banco
 
 //criar variavel $resultado que recebe a função conexaoMysql() para executar a função e exibir via var_dump o código
 $resultado = conexaoMysql();
-var_dump($resultado);
 
 // fun para abertura da conexão com bd
 function conexaoMysql(){
