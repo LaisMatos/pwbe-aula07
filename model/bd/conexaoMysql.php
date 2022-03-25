@@ -32,8 +32,14 @@ function conexaoMysql(){
     }else {
         return false;
     }
-
+ 
 }
+
+    //fechar conexão com bd
+function fecharConexaoMysql($conexao){
+        mysqli_close($conexao);
+}
+
 
 /*########### ANOTAÇÕES ##############
 

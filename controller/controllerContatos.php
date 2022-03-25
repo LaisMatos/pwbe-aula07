@@ -57,8 +57,30 @@ function inserirContatos($dadosContato){
 function atualizarContatos(){
 }
 
-//fun para realizar dados de contatos
-function excluirContatos(){
+//fun para realizar eclusão de dados de contatos
+function excluirContatos($id){
+
+    //se for diferente de zero e diferente de vazio e tem que ser um numero 
+    if ($id !=0 && !empty($id) && is_numeric($id)) {
+        
+        //import do arquivo contato
+        require_once('model/bd/contato.php');
+        
+        //chamando fun de model e validando retorno (true ou false)
+        if(deleteContato($id)){
+            return true;
+        }else{
+            return array ( 'idErro'     => 3,
+                            'message'   => 'Não pode excluir registro'
+            );
+        }
+
+    }else{
+        return array(   'isErro'    => 4,
+                        'message'   => 'Não pode excluir registro - Informar Id'
+        );
+    }
+
 }
 
 //fun solicita dados de model e encaminha a lista de contatos para a View

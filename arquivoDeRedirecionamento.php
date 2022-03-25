@@ -16,7 +16,7 @@ $action =(string)null;
 $identificador= (string)null; 
 
 //Validação para verificar se a requisição  é um post de um formulário
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
     /*echo('Requesição de form');*/
 
     //Recebendo dados via url (get) e qual ação será realizada
@@ -43,17 +43,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if ($resposta) {
                         //parte01: REDIRECIONANDO PARA PÁGINA INICIAL VIA JS usando <window.location.href='index.php>
                         echo("<script>alert('REGISTRO INSERIDO COM SUCESSO');
-                        window.location.href='index.php';</script>");
-                    
-                    
+                        window.location.href='index.php';</script>");     
                     }
+
                   //se retornar um array, então houve um erro de processo de inserção
                 } elseif (is_array($resposta)) {
+                    
+                    //retorno de msg
                     echo("<script>
                         alert('".$resposta['message']."');
                         window.history.back();
                     </script>");    
                     
+                }
+            }elseif ($action =='DELETAR') {
+                
+                //recebendo id do registro que deverá ser exluido, que foi enviado pela url no link da img do excluir através da index
+                $idContato = $_GET['id'];
+
+                //chamando fun deleteContato
+                $resposta= excluirContatos($idContato);
+
+                //saida de msg
+                if (is_bool($resposta)) {
+                    
+                    if ($resposta) {
+                        echo("<script>alert('REGISTRO EXCLUIDO COM SUCESSO');
+                        window.location.href='index.php';</script>");                         
+                    }
+
+                }elseif(is_array($resposta)){
+                    echo("<script>
+                        alert('".$resposta['message']."');
+                        window.history.back();
+                    </script>");    
                 }
             }
         
@@ -131,6 +154,8 @@ ATENÇÃO A ESTRUTURA <ACTION> DO HTML NÃO SE COMUNICA COM A ESTRUTURA <FUNCTIO
             break;    
     }
 
+
+    die--> para "matar" execução. Força uma parada
 
         
 */

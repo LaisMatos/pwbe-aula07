@@ -24,7 +24,7 @@ function insertContato($dadosContato){ //quem traz os dados do array selecionand
             telefone, 
             celular, 
             email, 
-            obs);
+            obs)
         values
             ('".$dadosContato['nome']."', 
             '".$dadosContato['telefone']."', 
@@ -32,18 +32,25 @@ function insertContato($dadosContato){ //quem traz os dados do array selecionand
             '".$dadosContato['email']."',
             '".$dadosContato['observacao']."');"
             ;
-    
+    /*echo($sql);
+    die;*/
+
    //parte1: execução do script no banco de dados --> mysqli_query($conexao,$sql) //mysqli_query retorna um booleno
    //parte2: verificação se o script sql esta correto
     if (mysqli_query($conexao,$sql)){  
         //verificação se uma linha foi acrescentada no banco
         if (mysqli_affected_rows($conexao)) { //verifica se teve alguma linha no baco afetada <mysqli_affected_rows>
+            
+            fecharConexaoMysql($conexao);
             return true;
         }else {
+            
+            fecharConexaoMysql($conexao);
             return false;
         }
     }else{
-        return false;
+            fecharConexaoMysql($conexao);
+            return false;
     } 
 
 }
@@ -54,8 +61,29 @@ function updateContato(){
 }
 
 //function para excluir no banco de dado
-function deleteContato(){
+function deleteContato($id){
+
+   //declaração de variavel para utilizar no return da fun
+    $statusResposta=(boolean)false;
     
+    //abrir conexão com o banco
+    $conexao = conexaoMysql();
+
+    //montar script para deletar resgistro
+    $sql= "delete from tblContatos where idContato=".$id;
+    
+    //
+    //validação com if se o script está correto e executa no bd
+    if(mysqli_query($conexao,$sql)){
+        
+        //valida se o bd teve sucesso da execução do script retornando um boolean
+        if(mysqli_affected_rows($conexao)){
+            $statusResposta=true;
+        }
+    }
+    //fecha conexão com bd
+    fecharconexaoMysql($conexao);
+    return $statusResposta;
 }
 
 //functio para listar todos os contatos dos bancos de dados
@@ -64,7 +92,7 @@ function selectAllContato(){
     $conexao= conexaoMysql();
     
     //criando script para listar todos os dados do banco de dados 
-    $sql="select*from tblContatos";
+    $sql="select*from tblContatos order by idContato desc";
     $result = mysqli_query($conexao,$sql);
 
     //valida se o banco de dados retornou registros
@@ -78,14 +106,19 @@ function selectAllContato(){
             //Extraindo os dados da estrutura <fecth_assoc> //criar um array com os dados do banco de dados
             //array baseado em indice e com chaves
             $arrayDados[$cont]=array(
-                "nome" =>$rsDados['nome'],
-                "telefone" =>$rsDados['telefone'],
-                "celular" =>$rsDados['celular'],
-                "email" =>$rsDados['email'],
-                "obs" =>$rsDados['obs']
+
+                "id"        =>$rsDados['idContato'],
+                "nome"      =>$rsDados['nome'],
+                "telefone"  =>$rsDados['telefone'],
+                "celular"   =>$rsDados['celular'],
+                "email"     =>$rsDados['email'],
+                "obs"       =>$rsDados['obs']
             );
             $cont++;
         }
+
+        //solicita o fechamento da conexão como bd por motivos de segurança    
+        fecharConexaoMysql($conexao);
         //retornando os dados do array
         return $arrayDados;
     }
