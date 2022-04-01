@@ -126,6 +126,42 @@ function selectAllContato(){
 
 }
 
+//function para buscar um contato no banco de dados através do id do registro
+function selectByIdContato($id){
+    //estabelecendo conecxão com a função conexaoMysql();
+    $conexao= conexaoMysql();
+    
+    //criando script para listar todos os dados do banco de dados 
+    $sql="select*from tblContatos where idContato=".$id;
+    $result = mysqli_query($conexao,$sql);
+ 
+    //valida se o banco de dados retornou registros
+    if ($result) {
+         
+        //armazenando array convertido (convertido usando a estrutura fetch)
+        if($rsDados = mysqli_fetch_assoc($result)) {
+             
+            //Extraindo os dados da estrutura <fecth_assoc> //criar um array com os dados do banco de dados
+            //array baseado em indice e com chaves
+            $arrayDados=array(
+ 
+                "id"        =>$rsDados['idContato'],
+                "nome"      =>$rsDados['nome'],
+                "telefone"  =>$rsDados['telefone'],
+                "celular"   =>$rsDados['celular'],
+                "email"     =>$rsDados['email'],
+                "obs"       =>$rsDados['obs']
+            );
+        }
+ 
+         //solicita o fechamento da conexão como bd por motivos de segurança    
+         fecharConexaoMysql($conexao);
+         //retornando os dados do array
+         return $arrayDados;
+    }
+
+}
+
 /*
 
 1. criação de funções

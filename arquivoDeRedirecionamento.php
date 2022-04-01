@@ -78,7 +78,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                         window.history.back();
                     </script>");    
                 }
+            }elseif($action=='BUSCAR'){
+                    
+                //recebendo id do registro que deverá ser eDITADO, que foi enviado pela url no link da img do excluir através da index
+                $idContato = $_GET['id'];
+
+                //chamando fun de excluir na controller
+                $dados= buscarContato($idContato);
+
+                //Ativa a utilização de variaveis de sessão no servidor
+                session_start();
+
+                //gaudar em uma variavel de sessão os dados que o banco de dados retornou para buscar do id
+                //obs: (essa variavel será utilizada na index.php, para colocar os dados nas caixas de texto)
+                $_SESSION['dadosContato']=$dados;
+
+                //import da index.php para ñ usar um link, onde ocorre a transição de maneira mais visivel piscando a tela
+                require_once('index.php');
             }
+
         
         break;    
     }
@@ -92,7 +110,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
 REDIRECIONANDO PARA PÁGINA INICIAL VIA JS
 window.location.href='index.php'
 
+Variaveis de sessão: POR QUE ESTAMOS USANDO 
 
+        Toda vez que existe transição de telas pelo navegador, o conteúdo de uma variável passa a não existir mais, 
+        por isso é necessário que esse dado seja guardado em uma "variavel global", ou seja, Variaveis de Sessão. 
+        A variavel de sessão permance com seus dados (ativa) enquanto o navegador estiver aberto ou destruido pelo navegador. 
+   
+        session_start() --> mecanismo para ativar o tipo de variavel de sessão no servidor apache
+        Ex
+        
+        session_start();
+                
+                $_SESSION['dadosContato']=$dados;
 */
 
 

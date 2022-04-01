@@ -60,7 +60,7 @@ function atualizarContatos(){
 //fun para realizar eclusão de dados de contatos
 function excluirContatos($id){
 
-    //se for diferente de zero e diferente de vazio e tem que ser um numero 
+    //validação do idse for diferente de zero e diferente de vazio e tem que ser um numero 
     if ($id !=0 && !empty($id) && is_numeric($id)) {
         
         //import do arquivo contato
@@ -99,6 +99,33 @@ function listarContatos(){
         return false;
     }
 
+
+}
+// fun solicita dados de um contato através do id do registro
+function buscarcontato($id){
+    
+    // tem que chegar um id válido. 
+    //validação do id se for diferente de zero e diferente de vazio e tem que ser um numero 
+    if ($id !=0 && !empty($id) && is_numeric($id)){
+
+        //import do arquivo contato
+        require_once('model/bd/contato.php');
+
+        //chamada de fun na model que vai bucar no bd
+        $dados=selectByIdContato($id);
+
+        //valida se existem dados para serem devolvidos
+        if(!empty($dados)){
+            return $dados;
+        }else{
+            return false;
+        }
+
+    }else{
+        return array(   'isErro'    => 4,
+                        'message'   => 'Não é possível bucar um registro sem informar Id válido'
+        );
+    }
 
 }
 
