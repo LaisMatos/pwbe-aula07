@@ -56,8 +56,38 @@ function insertContato($dadosContato){ //quem traz os dados do array selecionand
 }
 
 // function para atualizar no banco de dados
-function updateContato(){
+function updateContato($dadosContato){
     
+    //abetura de conexão com o banco de dados
+    $conexao= conexaoMysql();
+
+    //Script para atualizar dados no banco de dados
+    $sql="update tblContatos set
+            nome            ='".$dadosContato['nome']."', 
+            telefone        ='".$dadosContato['telefone']."',
+            celular         ='".$dadosContato['celular']."',
+            email           ='".$dadosContato['email']."',
+            obs             ='".$dadosContato['observacao']."'
+            where idContato =".$dadosContato['id']; //limita o id que deve ser atualizado
+  
+     
+    //parte1: execução do script no banco de dados --> mysqli_query($conexao,$sql) //mysqli_query retorna um booleno
+    //parte2: verificação se o script sql esta correto
+    if (mysqli_query($conexao,$sql)){  
+        //verificação se uma linha foi acrescentada no banco
+        if (mysqli_affected_rows($conexao)) { //verifica se teve alguma linha no baco afetada <mysqli_affected_rows>
+            
+            fecharConexaoMysql($conexao);
+            return true;
+        }else {
+            
+            fecharConexaoMysql($conexao);
+            return false;
+        }
+    }else{
+            fecharConexaoMysql($conexao);
+            return false;
+    }
 }
 
 //function para excluir no banco de dado
@@ -202,11 +232,20 @@ Só o Select que retorna dados.
 <$rsDados> --> array que amarzenará os dados convertidos do banco de dados
  
 estrutura <while> para gerenciar a quantidade de vezes que deverá ser feita a repetição de itens do array
-while ($rsDados = mysqli_fetch_assoc($result)) {
-            
-        }
+while ($rsDados = mysqli_fetch_assoc($result)) {}
 
 
+A estrutura do UPDATE é ddiferente da estrututa INSERT
+    Exemplo:
+            $sql="update tblContatos set
+                    nome        ='".$dadosContato['nome']."', 
+                    telefone    ='".$dadosContato['telefone']."',
+                    celular     ='".$dadosContato['celular']."',
+                    email       ='".$dadosContato['email']."',
+                    obs         ='".$dadosContato['observacao']."'
+                    where idcontato=".$dadosContato['id'];
+
+ where idcontato=".$dadosContato['id']; --> limita o id que precisa ser atualizado
 
 */
 

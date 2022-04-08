@@ -95,6 +95,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
 
                 //import da index.php para ñ usar um link, onde ocorre a transição de maneira mais visivel piscando a tela
                 require_once('index.php');
+            }elseif($action=='EDITAR'){
+
+                //recebe id que foi encaminhado no action do form pela url
+                $idContato=$_GET['id'];
+
+                 // chama função de editar na controller
+                 $resposta=atualizarContatos($_POST, $idContato);
+
+            
+                 //parte01: função atualizarContatos($_POST) do arq controller
+                 //parte02: validação do tipo de dados que a controller retornou
+                 if (is_bool($resposta)){ //parte02: se for booleano
+                     
+                     //verificar se o retorno foi verdadeiro
+                     if ($resposta) {
+                         //parte01: REDIRECIONANDO PARA PÁGINA INICIAL VIA JS usando <window.location.href='index.php>
+                         echo("<script>alert('REGISTRO ATUALIZADO COM SUCESSO');
+                         window.location.href='index.php';</script>");     
+                     }
+ 
+                   //se retornar um array, então houve um erro de processo de atualização
+                 } elseif (is_array($resposta)) {
+                     
+                     //retorno de msg
+                     echo("<script>
+                         alert('".$resposta['message']."');
+                         window.history.back();
+                     </script>"); 
+
+                }
+
             }
 
         
