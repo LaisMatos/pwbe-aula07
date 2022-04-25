@@ -1,6 +1,6 @@
 <?php
 /*******************************************************************************************************************************************
-*Objetivo: Arquivo de rota. Segementa as ações encaminhabadas pela View (dados de um form, listagem de dados, ação de ou atualizar)
+*Objetivo: Arquivo de rota (router). Segementa as ações encaminhabadas pela View (dados de um form, listagem de dados, ação de ou atualizar)
 *          Também responsável por encaminhar as solicitações para o controller.
 *          Criando arquivo pensando em reutilizar o arquivo para diferentes ações. Ou seja, ter apenas um arquivo de rota
 *Autor: lais
@@ -32,16 +32,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
             //identificação do tipo de ação que será realizada
             if ($action =='INSERIR') {
                 
-                // chama função de inserir na controller
-                $resposta=inserirContatos($_POST);
+                //
+                if (isset($_FILES) && !empty($_FILES)) {
+                    //chama função de inserir na controller
+                    $resposta =inserirContatos($_POST,$_FILES);                    
+                }else{
+                    $resposta =inserirContatos($_POST,null);
+                }
 
-                //parte01: função inserirContatos($_POST) do arq controller
-                //parte02: validação do tipo de dados que a controller retornou
-                if (is_bool($resposta)){ //parte02: se for booleano
+                //(1): função inserirContatos($_POST) do arq controller
+                //(2): validação do tipo de dados que a controller retornou
+                if (is_bool($resposta)){ //(2): se for booleano
                     
                     //verificar se o retorno foi verdadeiro
                     if ($resposta) {
-                        //parte01: REDIRECIONANDO PARA PÁGINA INICIAL VIA JS usando <window.location.href='index.php>
+                        //(1): REDIRECIONANDO PARA PÁGINA INICIAL VIA JS usando <window.location.href='index.php>
                         echo("<script>alert('REGISTRO INSERIDO COM SUCESSO');
                         window.location.href='index.php';</script>");     
                     }
@@ -104,8 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                  $resposta=atualizarContatos($_POST, $idContato);
 
             
-                 //parte01: função atualizarContatos($_POST) do arq controller
-                 //parte02: validação do tipo de dados que a controller retornou
+                 //(1): função atualizarContatos($_POST) do arq controller
+                 //(2): validação do tipo de dados que a controller retornou
                  if (is_bool($resposta)){ //parte02: se for booleano
                      
                      //verificar se o retorno foi verdadeiro

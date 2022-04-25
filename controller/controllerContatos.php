@@ -8,20 +8,31 @@
 *********************************************************************************************************************/
 
 //fun recebe dados da View e encaminha para a model
-function inserirContatos($dadosContato){
+function inserirContatos($dadosContato,$file){
     //validação, verificando se a variavel/obj está vazia
     if (!empty($dadosContato)) {
         //validação se não estiver vazia a caixa <txtNome> e <txtCelular> e <txtEmail>, o bloco segue rodando. Dados obrigatórios.
         if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail'])) {
             
-            /*
-            Criação do array de dados que será encaminhado a model para inserir no banco de dados,
-            é importante criar este array conforme as necessidades de manipulação do banco de dados.
-            OBS: CRIAR CAHVES-VALOR DO ARRAY CONFORME OS NOMES DOS ATRIBUTOS DO BANCO DE DADOS
 
-            se não criar esse array todos os tipos de dado recebidos via post, até o valor do salvar botão, chegará no no bd
-            
-            */
+           if ($file != null) {
+                
+                require_once ('modulo/upload.php') 
+
+                $resultado = uploadFile($file['flefoto']);
+
+                echo($resultado);
+                die;
+           }
+           
+           
+           
+            /* Criação do array de dados que será encaminhado a model para inserir no banco de dados,
+            é importante criar este array conforme as necessidades de manipulação do banco de dados.
+                OBS: CRIAR CAHVES-VALOR DO ARRAY CONFORME OS NOMES DOS ATRIBUTOS DO BANCO DE DADOS
+                     Se não criar esse array todos os tipos de dado recebidos via post, até o valor do salvar botão, chegará no no bd  */
+
+
             $arrayDados = array(
                 "nome"          => $dadosContato['txtNome'],
                 "telefone"      => $dadosContato['txtTelefone'],
@@ -84,7 +95,7 @@ function atualizarContatos($dadosContato, $id){
                                 'message'=> 'NÃO FOI POSSÍVEL ATUALIZAR OS DADOS NO BANCO DE DADOS');
                 }
             }else{
-                return array('isErro' => 4,
+                return array('idErro' => 4,
                                 'message'=> 'Não é possível editar registro - Informar Id');
                 }
             

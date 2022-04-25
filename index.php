@@ -56,7 +56,8 @@
                 <h1> Cadastro de Contatos </h1>
             </div>
             <div id="cadastroInformacoes">
-                <form  action= <?=$form?>  name="frmCadastro" method="post" > <!-- identificação p/ arq de rota e requisições (o que quer fazer)-->
+                <!--enctype="multipart/form-data" Essa opção é obrigatória para enviar arquivos do formulário em html para o servidor-->
+                <form  action= <?=$form?>  name="frmCadastro" method="post" enctype="multipart/form-data"> <!-- identificação p/ arq de rota e requisições (o que quer fazer)-->
                     
                     <div class="campos">
                         <div class="cadastroInformacoesPessoais">
@@ -91,6 +92,15 @@
                         <div class="cadastroEntradaDeDados">
                             <input type="email" name="txtEmail" value="<?=isset($email)?$email:null?>">
                         </div>
+                    </div>
+                    <div class="campos">
+                        <div class="cadastroInformacoesPessoais">
+                            <label> Escolha um Arquivo: </label>
+                        </div>
+                        <div class="cadastroEntradaDeDados">
+                        <!--accept serve para colocar as extenções que poderão aceitar quando ....................... -->
+                            <input type="file" name="flefoto" accept=".jpg, .png, .jpeg, .gif">
+                        </div>                        
                     </div>
                     <div class="campos">
                         <div class="cadastroInformacoesPessoais">
