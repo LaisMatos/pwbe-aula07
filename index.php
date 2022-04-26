@@ -129,6 +129,7 @@
                     <td class="tblColunas destaque"> Nome </td>
                     <td class="tblColunas destaque"> Celular </td>
                     <td class="tblColunas destaque"> Email </td>
+                    <td class="tblColunas destaque"> Foto </td>
                     <td class="tblColunas destaque"> Opções </td>
                 </tr>
                 
@@ -145,6 +146,9 @@
                     <td class="tblColunas registros"><?=$item['nome']?></td>
                     <td class="tblColunas registros"><?=$item['celular']?></td>
                     <td class="tblColunas registros"><?=$item['email']?></td>
+                    
+                    <!--inserção de img-->
+                    <td class="tblColunas registros"> <img src="arquivos/<?=$item['foto']?>" class="foto"> </td>
                                    
                     <td class="tblColunas registros">
 

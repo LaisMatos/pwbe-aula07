@@ -9,20 +9,29 @@
 
 //fun recebe dados da View e encaminha para a model
 function inserirContatos($dadosContato,$file){
+   
+    //declaração de variável fora de if de validação de arquivo para que não dê erro de autenticação para o banco
+   $nomeFoto=(string) null;
+   
     //validação, verificando se a variavel/obj está vazia
     if (!empty($dadosContato)) {
+
         //validação se não estiver vazia a caixa <txtNome> e <txtCelular> e <txtEmail>, o bloco segue rodando. Dados obrigatórios.
         if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail'])) {
             
-
-           if ($file != null) {
+            //validação para identificar se chegou um arquivo para upload
+            if ($file != null) {
                 
-                require_once ('modulo/upload.php') 
+                //import da função de upload 
+                require_once ('modulo/upload.php');
+                $nomeFoto = uploadFile($file['flefoto']);
 
-                $resultado = uploadFile($file['flefoto']);
-
-                echo($resultado);
-                die;
+                //validação de insert de arquivo
+                if (is_array($nomeFoto)) {
+                    
+                    //Caso aconteça algum erro no processo de upload, a função irá retornar um array conforme as necessidades de manipulação do BD.
+                    return $nomeFoto;
+                }           
            }
            
            
@@ -38,7 +47,8 @@ function inserirContatos($dadosContato,$file){
                 "telefone"      => $dadosContato['txtTelefone'],
                 "celular"       => $dadosContato['txtCelular'],
                 "email"         => $dadosContato['txtEmail'],
-                "observacao"    => $dadosContato['txtObs']   
+                "observacao"    => $dadosContato['txtObs'],
+                "foto"          => $nomeFoto //por ser uma variavel e ñ um post, o array tem essa estrutura
             );
 
             //imput do contato.php. importa está aqui para só chamar o arquivo contato.php depois de validar
