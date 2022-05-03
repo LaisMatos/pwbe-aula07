@@ -20,7 +20,7 @@ function inserirContatos($dadosContato,$file){
         if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail'])) {
             
             //validação para identificar se chegou um arquivo para upload
-            if ($file != null) {
+            if ($file['flefoto']['name'] != null) {
                 
                 //import da função de upload 
                 require_once ('modulo/upload.php');
@@ -70,7 +70,14 @@ function inserirContatos($dadosContato,$file){
         
 }
 // fun recebe recebe dados da View e encaminha para model (ATUALIZAÇÃO)
-function atualizarContatos($dadosContato, $id){
+function atualizarContatos($dadosContato, $arrayDados){
+
+    //Gambiarra para não alterrar o nome id pelo nome arrayDados. Recebe o id enviado pelo arrayDados;
+    $id=$arrayDados['id'];
+    //recebe a foto enviada pelo arrayDados (Nome da foto que ja existe no BD)
+    $foto = $arrayDados ['foto'];
+    //recebe  o obj de array referente a nova foto que poderá ser enviada ao servidor 
+    $file= $arrayDados['file'];
 
 
     //validação, verificando se a variavel/obj está vazia
@@ -81,6 +88,20 @@ function atualizarContatos($dadosContato, $id){
             //validação do id se ele for diferente de zero e diferente de vazio e tem que ser um numero 
             if(!empty($id) && $id !=0 && is_numeric($id)){
 
+                //validação para identificar se será enviado para o servidor uma nova foto
+                if ($file['flefoto']['name'] !=null) {
+                    
+                    //import da função de upload 
+                    require_once ('modulo/upload.php');
+
+                    //chama a função upload para enviar a nova foto para o servidor 
+                    $novaFoto = uploadFile($file['flefoto']);                   
+
+                }else{
+                    //permanece a mesma foto no Banco de dado
+                    $novaFoto = $foto;
+                }
+
                 /*  Criação do array de dados que será encaminhado a model para inserir no banco de dados,é importante criar este array conforme as necessidades de manipulação do banco de dados.
                     OBS: CRIAR CAHVES-VALOR DO ARRAY CONFORME OS NOMES DOS ATRIBUTOS DO BANCO DE DADOS
                     Se não criar esse array todos os tipos de dado recebidos via post, até o valor do salvar botão, chegará no no bd */
@@ -90,7 +111,8 @@ function atualizarContatos($dadosContato, $id){
                     "telefone"      => $dadosContato['txtTelefone'],
                     "celular"       => $dadosContato['txtCelular'],
                     "email"         => $dadosContato['txtEmail'],
-                    "observacao"    => $dadosContato['txtObs']   
+                    "observacao"    => $dadosContato['txtObs'],
+                    "foto"          => $novaFoto
                 );
 
                 //imput do contato.php. importa está aqui para só chamar o arquivo contato.php depois de validar
@@ -99,6 +121,7 @@ function atualizarContatos($dadosContato, $id){
                 //parte01: chamando a função insertContato() que está no aquivo contato.php e passa os dados do $arrayDados para alimentar o banco de dados --> insertContato($arrayDados);
                 //parte02: tratamento de erro caso dado não tenha sido inserido no banco de dados 
                 if (updateContato($arrayDados)) {
+                    unlink(DIR_FILE_UPLOAD.$foto);
                     return true;
                 }else{
                     return array('idErro' =>1,
@@ -117,7 +140,13 @@ function atualizarContatos($dadosContato, $id){
     }
 }
 //fun para realizar eclusão de dados de contatos
-function excluirContatos($id){
+function excluirContatos($arrayDados){
+
+    //gambiarra porque não quis refatorar o nome id por arrayDados. Variavel que recebe o id do resgistro que será excluído 
+    $id = $arrayDados['id'];
+
+    //recebe o nome da foto que será excluida na pasta do servidor
+    $foto= $arrayDados['foto'];
 
     //validação do id se ele for diferente de zero e diferente de vazio e tem que ser um numero 
     if ($id !=0 && !empty($id) && is_numeric($id)) {
@@ -125,9 +154,32 @@ function excluirContatos($id){
         //import do arquivo contato
         require_once('model/bd/contato.php');
         
+        //import do arquivo de configuração do projeto
+        require_once('modulo/config.php');
+        
         //chamando fun de model e validando retorno (true ou false)
         if(deleteContato($id)){
-            return true;
+            if ($foto !=null) {
+                
+                //apaga a foto fisicamanete do diretório no servidor 
+              if  (unlink(DIR_FILE_UPLOAD.$foto)){
+                return true;
+              }else{
+                    return array ( 'idErro'     => 5,
+                                    'message'   => 'o registro foi ........'
+                    );
+              }               
+
+            }
+            
+            
+            else{
+                return true;
+            }
+
+
+
+            
         }else{
             return array ( 'idErro'     => 3,
                             'message'   => 'Não pode excluir registro'
@@ -196,6 +248,11 @@ function buscarcontato($id){
 6. o <name> no html, serão as chaves do array do post
 7. !empty(), segundo if. Tratatativa dos dados obrigatórios no banco de dados, eles não podem estar vazios
 8. TODOS OS TRATAMENTOS DE ERRO DEVEM SER FEITOS NO ARQUIVO CONTROLLER
+
+<unlink()>  função responsável por apagar a um arquivo de um diretório.
+            sintaxe:  unlink (caminho + nome do arquivo);
+                      
+            Exemplo: unlink (DIR_FILE_UPLOAD.$foto);
 
 */
 

@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
             //identificação do tipo de ação que será realizada
             if ($action =='INSERIR') {
                 
-                //
+               
                 if (isset($_FILES) && !empty($_FILES)) {
                     //chama função de inserir na controller
                     $resposta =inserirContatos($_POST,$_FILES);                    
@@ -65,10 +65,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                 
                 //recebendo id do registro que deverá ser exluido, que foi enviado pela url no link da img do excluir através da index
                 $idContato = $_GET['id'];
+                $foto = $_GET['foto'];
+
+                //array para encaminhar dois dados, id e foto, para controller
+                $arrayDados = array (
+                    "id"    => $idContato,
+                    "foto"  => $foto
+                );
 
                 //chamando fun deleteContato
-                $resposta= excluirContatos($idContato);
+                $resposta= excluirContatos($arrayDados);
 
+              
                 //saida de msg
                 if (is_bool($resposta)) {
                     
@@ -104,30 +112,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
 
                 //recebe id que foi encaminhado no action do form pela url
                 $idContato=$_GET['id'];
+                //recebe o nome da foto que foi enviada pelo GET do form
+                $foto=$_GET['foto'];
 
-                 // chama função de editar na controller
-                 $resposta=atualizarContatos($_POST, $idContato);
+                //array para encaminhar dois dados, id e foto, para controller
+                $arrayDados= array(
+                    $id     => $idContato,
+                    $foto   => $foto,
+                    $file   => $_FILES
+                );
 
+                // chama função de editar na controller
+                $resposta=atualizarContatos($_POST, $arrayDados);
             
                  //(1): função atualizarContatos($_POST) do arq controller
                  //(2): validação do tipo de dados que a controller retornou
-                 if (is_bool($resposta)){ //parte02: se for booleano
+                if (is_bool($resposta)){ //parte02: se for booleano
                      
                      //verificar se o retorno foi verdadeiro
-                     if ($resposta) {
-                         //parte01: REDIRECIONANDO PARA PÁGINA INICIAL VIA JS usando <window.location.href='index.php>
-                         echo("<script>alert('REGISTRO ATUALIZADO COM SUCESSO');
-                         window.location.href='index.php';</script>");     
-                     }
+                    if ($resposta) {
+                        //parte01: REDIRECIONANDO PARA PÁGINA INICIAL VIA JS usando <window.location.href='index.php>
+                        echo("<script>alert('REGISTRO ATUALIZADO COM SUCESSO');
+                        window.location.href='index.php';</script>");     
+                    }
  
                    //se retornar um array, então houve um erro de processo de atualização
-                 } elseif (is_array($resposta)) {
+                }elseif (is_array($resposta)) {
                      
-                     //retorno de msg
-                     echo("<script>
+                    //retorno de msg
+                    echo("<script>
                          alert('".$resposta['message']."');
                          window.history.back();
-                     </script>"); 
+                    </script>"); 
 
                 }
 

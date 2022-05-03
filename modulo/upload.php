@@ -52,7 +52,7 @@ function uploadFile ($arrayFile)
                //md5() - gera um criptografia de dados
                //uniqid() - gera uma sequencia numerica diferente tendo como base configurações da máquina
                //time() - pega a hora:minuto:segundo que esta sendo feito o upload da foto
-               $nome = md5($nome.uniqid(time())); 
+               $nomeCrity = md5($nome.uniqid(time())); 
 
                //remontagem do nome do arquivo com a extensão
                $foto= $nomeCrity.".".$extensao;

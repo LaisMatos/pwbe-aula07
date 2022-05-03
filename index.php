@@ -1,10 +1,15 @@
 <?php
+    //imports
+
+    //arquivo de configurações d projeto
+    require_once('modulo/config.php');
+
 
     /*######  OQ ESTAMOS FAZENDO AQUI? #######*/
     
-
-    //variavel foi criada para diferenciar no action do formulário qual ação deveria ser levada para a router (inserir e editar). Nas condições abaixo mudamos a action dessa variavel para a ação de editar
-    $form = (string) "arquivoDeRedirecionamento.php?identificador=contatos&action=inserir" ;
+    
+    $foto= (string) null; //variavel para carregar o nome da foto no banco de dados    
+    $form = (string) "arquivoDeRedirecionamento.php?identificador=contatos&action=inserir" ;//variavel foi criada para diferenciar no action do formulário qual ação deveria ser levada para a router (inserir e editar). Nas condições abaixo mudamos a action dessa variavel para a ação de editar
 
     //tratando erro de variavel não declarada. Valida se a utilização de variavel de sessão está ativa no servidor
     if(session_status()){
@@ -16,12 +21,12 @@
             $celular        = $_SESSION['dadosContato']['celular'];
             $email          = $_SESSION['dadosContato']['email'];
             $obs            = $_SESSION['dadosContato']['obs'];
+            $foto           = $_SESSION['dadosContato']['foto'];
 
-    //mudamos a ação do dorm para editar o registro no click do botão salvar    
-    $form = "arquivoDeRedirecionamento.php?identificador=contatos&action=editar&id=".$id;
-
-    //destrói variavel de sessao da memoria do servidor 
-    unset($_SESSION['dadosContato']);
+            //mudamos a ação do dorm para editar o registro no click do botão salvar    
+            $form = "arquivoDeRedirecionamento.php?identificador=contatos&action=editar&id=".$id."&foto=".$foto;       
+            //destrói variavel de sessao da memoria do servidor 
+            unset($_SESSION['dadosContato']);
         }
 
     }
@@ -110,6 +115,12 @@
                             <textarea name="txtObs" cols="50" rows="7"> <?=isset($obs)?$obs:null?></textarea>
                         </div>
                     </div>
+
+                    <!---->
+                    <div class="campos">
+                        <img src="<?=DIR_FILE_UPLOAD.$foto?>" >
+                    </div>
+
                     <div class="enviar">
                         <div class="enviar">
                             <input type="submit" name="btnEnviar" value="Salvar">
@@ -140,6 +151,8 @@
                     $listContato = listarContatos(); 
                     //estrutura de repetição para retornar os dados do array printar na tela
                     foreach ($listContato as $item) { //for para exibir listas na tela
+
+                        $foto=$item['foto'];
                ?>
                 <tr id="tblLinhas">
 
@@ -148,7 +161,7 @@
                     <td class="tblColunas registros"><?=$item['email']?></td>
                     
                     <!--inserção de img-->
-                    <td class="tblColunas registros"> <img src="arquivos/<?=$item['foto']?>" class="foto"> </td>
+                    <td class="tblColunas registros"> <img src="<?=DIR_FILE_UPLOAD.$item['foto']?>" class="foto"> </td>
                                    
                     <td class="tblColunas registros">
 
@@ -157,7 +170,7 @@
                                 <img src="img/edit.png" alt="Editar" title="Editar" class="editar">
                             </a>
                             <!--icone excluir-->
-                            <a onclick="return confirm('Deseja excluir este item?');" href="arquivoDeRedirecionamento.php?identificador=contatos&action=deletar&id=<?=$item['id']?>"> <!--manipulando id c/ php aqui-->
+                            <a onclick="return confirm('Deseja excluir este item?');" href="arquivoDeRedirecionamento.php?identificador=contatos&action=deletar&id=<?=$item['id']?>&foto=<?=$foto?>"> <!--manipulando id c/ php aqui-->
                                 <img src="img/trash.png" alt="Excluir" title="Excluir" class="excluir">    
                             </a>   
 
