@@ -7,7 +7,7 @@ body, h1, p{
 }
 #cadastro{
     width: 800px;
-    min-height: 700px;
+    min-height: 750px; 
     height: auto;
     margin-left: auto;
     margin-right: auto;
@@ -48,12 +48,13 @@ body, h1, p{
     flex-direction: row;
     margin-bottom: 10px;
     margin-top: 10px;
+    
 }
 .cadastroInformacoesPessoais  {
     width: 270px;
     height: 55px;
     float: left;
-   
+    
     background-color: #ededed;
     text-align: right;
     font-size: 1.1em;
@@ -99,6 +100,7 @@ input[type=email]:hover{
 .enviar input{
     width: 150px;
     height: 50px;
+    border-radius: 10px;
     background-color: dodgerblue;
     color: white;
     margin-top: 30px;

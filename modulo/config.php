@@ -13,11 +13,10 @@ const   DIR_FILE_UPLOAD ="arquivos/"; //dir = diretorio
 
 
 
-/*
+/* _______ ANOTAÇÕES_______
+
     Só é possível saber a escrita da extensão após tester a lógica do sistema
    < image/jpg, image/peg, image/gif, image/png>
-
-
 
 */
 

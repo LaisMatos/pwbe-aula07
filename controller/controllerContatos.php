@@ -6,6 +6,8 @@
 *Data: 04/03/22
 *Versão: Herbert Richers (1.0)
 *********************************************************************************************************************/
+//import do arquivo de configuração do projeto
+require_once('modulo/config.php');
 
 //fun recebe dados da View e encaminha para a model
 function inserirContatos($dadosContato,$file){
@@ -17,7 +19,7 @@ function inserirContatos($dadosContato,$file){
     if (!empty($dadosContato)) {
 
         //validação se não estiver vazia a caixa <txtNome> e <txtCelular> e <txtEmail>, o bloco segue rodando. Dados obrigatórios.
-        if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail'])) {
+        if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail']) && !empty($dadosContato['sltEstado'])) {
             
             //validação para identificar se chegou um arquivo para upload
             if ($file['flefoto']['name'] != null) {
@@ -32,13 +34,11 @@ function inserirContatos($dadosContato,$file){
                     //Caso aconteça algum erro no processo de upload, a função irá retornar um array conforme as necessidades de manipulação do BD.
                     return $nomeFoto;
                 }           
-           }
-           
-           
+           }                     
            
             /* Criação do array de dados que será encaminhado a model para inserir no banco de dados,
-            é importante criar este array conforme as necessidades de manipulação do banco de dados.
-                OBS: CRIAR CAHVES-VALOR DO ARRAY CONFORME OS NOMES DOS ATRIBUTOS DO BANCO DE DADOS
+                é importante criar este array conforme as necessidades de manipulação do banco de dados.
+                OBS: CRIAR CHAVES-VALORES DO ARRAY CONFORME OS NOMES DOS ATRIBUTOS DO BANCO DE DADOS
                      Se não criar esse array todos os tipos de dado recebidos via post, até o valor do salvar botão, chegará no no bd  */
 
 
@@ -48,10 +48,12 @@ function inserirContatos($dadosContato,$file){
                 "celular"       => $dadosContato['txtCelular'],
                 "email"         => $dadosContato['txtEmail'],
                 "observacao"    => $dadosContato['txtObs'],
-                "foto"          => $nomeFoto //por ser uma variavel e ñ um post, o array tem essa estrutura
+                "foto"          => $nomeFoto, //por ser uma variavel e ñ um post, o array tem essa estrutura
+                "idestado"      => $dadosContato['sltEstado']
             );
 
-            //imput do contato.php. importa está aqui para só chamar o arquivo contato.php depois de validar
+        
+            //imput do contato.php está aqui para só chamar o arquivo contato.php depois de validar
             require_once('model/bd/contato.php');
             
             //parte01: chamando a função insertContato() que está no aquivo contato.php e passa os dados do $arrayDados para alimentar o banco de dados --> insertContato($arrayDados);
@@ -61,17 +63,18 @@ function inserirContatos($dadosContato,$file){
             } 
             else {
                 return array('idErro' =>1,'message'=> 'NÃO FOI POSSÍVEL INSERIR OS DADOS NO BANCO DE DADOS');
-           }
-        //tratamento de erro para campo não preenchido
-        }else{
+           }            
+        }else{//tratamento de erro para campo não preenchido
             return array('idErro' =>2,'message' => 'EXISTEM CAMPOS OBRIGATÓRIOS NÃO PREENCHIDOS.'); 
-        }
-    }
-        
+        }             
+    }        
 }
+
 // fun recebe recebe dados da View e encaminha para model (ATUALIZAÇÃO)
 function atualizarContatos($dadosContato, $arrayDados){
 
+    //varial para validação de delete da foto
+    $statusUpload=(boolean)false;
     //Gambiarra para não alterrar o nome id pelo nome arrayDados. Recebe o id enviado pelo arrayDados;
     $id=$arrayDados['id'];
     //recebe a foto enviada pelo arrayDados (Nome da foto que ja existe no BD)
@@ -95,7 +98,8 @@ function atualizarContatos($dadosContato, $arrayDados){
                     require_once ('modulo/upload.php');
 
                     //chama a função upload para enviar a nova foto para o servidor 
-                    $novaFoto = uploadFile($file['flefoto']);                   
+                    $novaFoto = uploadFile($file['flefoto']);   
+                    $statusUpload=true;               
 
                 }else{
                     //permanece a mesma foto no Banco de dado
@@ -112,17 +116,25 @@ function atualizarContatos($dadosContato, $arrayDados){
                     "celular"       => $dadosContato['txtCelular'],
                     "email"         => $dadosContato['txtEmail'],
                     "observacao"    => $dadosContato['txtObs'],
-                    "foto"          => $novaFoto
+                    "foto"          => $novaFoto,
+                    "idestado"      => $dadosContato['sltEstado']
                 );
 
                 //imput do contato.php. importa está aqui para só chamar o arquivo contato.php depois de validar
                 require_once('model/bd/contato.php');
                 
-                //parte01: chamando a função insertContato() que está no aquivo contato.php e passa os dados do $arrayDados para alimentar o banco de dados --> insertContato($arrayDados);
+                //parte01: chamando a função insertContato() que está no aquivo contato.php e passa os dados do $arrayDados para alimentar o banco de dados -> insertContato($arrayDados);
                 //parte02: tratamento de erro caso dado não tenha sido inserido no banco de dados 
                 if (updateContato($arrayDados)) {
-                    unlink(DIR_FILE_UPLOAD.$foto);
+                    
+                    /*validação para verificar se será necessário apagar a foto antiga, esta variavel esta ativada em true, linha 76, 
+                    quando realizamos o upload de uma nova foto para o servidor*/
+                    if($statusUpload){
+                        //apaga a foto antiga da pasta do servidor 
+                        unlink(DIR_FILE_UPLOAD.$foto);
+                    }
                     return true;
+
                 }else{
                     return array('idErro' =>1,
                                 'message'=> 'NÃO FOI POSSÍVEL ATUALIZAR OS DADOS NO BANCO DE DADOS');
@@ -211,6 +223,7 @@ function listarContatos(){
 
 
 }
+
 // fun solicita dados de um contato através do id do registro
 function buscarcontato($id){
     
@@ -240,7 +253,8 @@ function buscarcontato($id){
 }
 
 
-/* ######## ANOTAÇÔES ########
+/*_________ ANOTAÇÔES __________
+
 1. criar funções
 2. passar argumentos
 3. condição- if/else

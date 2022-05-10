@@ -25,16 +25,19 @@ function insertContato($dadosContato){ //quem traz os dados do array selecionand
             celular, 
             email, 
             obs,
-            foto)
+            foto,
+            idestado)
         values
             ('".$dadosContato['nome']."', 
             '".$dadosContato['telefone']."', 
             '".$dadosContato['celular']."', 
             '".$dadosContato['email']."',
             '".$dadosContato['observacao']."',
-            '".$dadosContato['foto']."');"
+            '".$dadosContato['foto']."',
+            '".$dadosContato['idestado']."');"
             ;
-    /*echo($sql);
+
+    /*var_dump($sql);
     die;*/
 
    //parte1: execução do script no banco de dados --> mysqli_query($conexao,$sql) //mysqli_query retorna um booleno
@@ -70,7 +73,8 @@ function updateContato($dadosContato){
             celular         ='".$dadosContato['celular']."',
             email           ='".$dadosContato['email']."',
             obs             ='".$dadosContato['observacao']."',
-            foto            ='".$dadosContato['foto']."'
+            foto            ='".$dadosContato['foto']."',
+            idestado        ='".$dadosContato['idestado']."'
             where idContato =".$dadosContato['id']; //limita o id que deve ser atualizado
   
      
@@ -146,15 +150,25 @@ function selectAllContato(){
                 "celular"   =>$rsDados['celular'],
                 "email"     =>$rsDados['email'],
                 "obs"       =>$rsDados['obs'],
-                "foto"      =>$rsDados['foto']
+                "foto"      =>$rsDados['foto'],
+                "idestado"  =>$rsDados['idestado']
             );
             $cont++;
         }
 
         //solicita o fechamento da conexão como bd por motivos de segurança    
         fecharConexaoMysql($conexao);
-        //retornando os dados do array
-        return $arrayDados;
+      
+        //
+        if (isset($arrayDados)) {
+             //retornando os dados do array
+             return $arrayDados;
+        }else{
+            return false;
+        }
+    
+        
+       
     }
     
 
@@ -185,7 +199,9 @@ function selectByIdContato($id){
                 "celular"   =>$rsDados['celular'],
                 "email"     =>$rsDados['email'],
                 "obs"       =>$rsDados['obs'],
-                "foto"      =>$rsDados['foto']
+                "foto"      =>$rsDados['foto'],
+                "idestado"  =>$rsDados['idestado']
+
             );
         }
  
@@ -197,7 +213,7 @@ function selectByIdContato($id){
 
 }
 
-/*
+/*__________ ANOTAÇÕES ___________
 
 1. criação de funções
 3. passar argumentos

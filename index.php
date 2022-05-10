@@ -8,8 +8,9 @@
     /*######  OQ ESTAMOS FAZENDO AQUI? #######*/
     
     
-    $foto= (string) null; //variavel para carregar o nome da foto no banco de dados    
+    $foto= (string) 'semfoto.png'; //variavel para carregar o nome da foto no banco de dados    
     $form = (string) "arquivoDeRedirecionamento.php?identificador=contatos&action=inserir" ;//variavel foi criada para diferenciar no action do formulário qual ação deveria ser levada para a router (inserir e editar). Nas condições abaixo mudamos a action dessa variavel para a ação de editar
+    $idestado=(string) null; //variavel usada no carregamento dos estados (opção editar)
 
     //tratando erro de variavel não declarada. Valida se a utilização de variavel de sessão está ativa no servidor
     if(session_status()){
@@ -22,6 +23,8 @@
             $email          = $_SESSION['dadosContato']['email'];
             $obs            = $_SESSION['dadosContato']['obs'];
             $foto           = $_SESSION['dadosContato']['foto'];
+            $idestado       = $_SESSION['dadosContato']['idestado'];
+
 
             //mudamos a ação do dorm para editar o registro no click do botão salvar    
             $form = "arquivoDeRedirecionamento.php?identificador=contatos&action=editar&id=".$id."&foto=".$foto;       
@@ -31,18 +34,13 @@
 
     }
 
-
-   
-
-/*### ANOTAÇÃO ###
+/*_________ ANOTAÇÃO ____________
 
     //fun que diz se variavel de sessao esta ativa, por padrão ela é falsa por ñ estar ativa.
     session_status()
 
 */
 ?>
-
-
 
 
 <!DOCTYPE>
@@ -70,6 +68,31 @@
                         </div>
                         <div class="cadastroEntradaDeDados">
                             <input type="text" name="txtNome" value="<?=isset($nome)?$nome:null?>" placeholder="Digite seu Nome" maxlength="100">
+                        </div>
+                    </div>
+
+                    <div class="campos">
+                        <div class="cadastroInformacoesPessoais">
+                            <label> Estado:</label>
+                        </div>
+                        <div class="cadastroEntradaDeDados">
+                            <select name="sltEstado">
+                                <option value="">Selecione um item</option>
+                                    <?php
+                                        //import
+                                        require_once('controller/controllerEstados.php');
+                                        //chama fun p/ carregar todos os estados do BD
+                                        $listEstados=listarEstados();
+                                        foreach($listEstados as $item){
+                                           
+                                            /* estrutura ternária:  <?=$idestado==$item['idestado']?'selected':null?> */ 
+                                            ?>
+                                                <option <?=$idestado==$item['idestado']?'selected':null?> value="<?=$item['idestado']?>"><?=$item['nome']?> </option>
+                                                
+                                            <?php
+                                        }
+                                    ?>
+                            </select>
                         </div>
                     </div>
                                      
@@ -147,40 +170,44 @@
                <?php
                     // conexão com o arq controllerContatos
                     require_once('controller/controllerContatos.php');
-                    //chamando a fun listarcontatos
-                    $listContato = listarContatos(); 
-                    //estrutura de repetição para retornar os dados do array printar na tela
-                    foreach ($listContato as $item) { //for para exibir listas na tela
-
-                        $foto=$item['foto'];
-               ?>
-                <tr id="tblLinhas">
-
-                    <td class="tblColunas registros"><?=$item['nome']?></td>
-                    <td class="tblColunas registros"><?=$item['celular']?></td>
-                    <td class="tblColunas registros"><?=$item['email']?></td>
                     
-                    <!--inserção de img-->
-                    <td class="tblColunas registros"> <img src="<?=DIR_FILE_UPLOAD.$item['foto']?>" class="foto"> </td>
-                                   
-                    <td class="tblColunas registros">
+                    
+                    //chamando a fun listarcontatos
+                    if ($listContato = listarContatos()) {                    
+                        
+                        //estrutura de repetição para retornar os dados do array printar na tela
+                        foreach ($listContato as $item) { //for para exibir listas na tela
+                            $foto=$item['foto'];
+                ?>
+                        <tr id="tblLinhas">
 
-                            <!--icone editar-->
-                            <a href="arquivoDeRedirecionamento.php?identificador=contatos&action=buscar&id=<?=$item['id']?>">
-                                <img src="img/edit.png" alt="Editar" title="Editar" class="editar">
-                            </a>
-                            <!--icone excluir-->
-                            <a onclick="return confirm('Deseja excluir este item?');" href="arquivoDeRedirecionamento.php?identificador=contatos&action=deletar&id=<?=$item['id']?>&foto=<?=$foto?>"> <!--manipulando id c/ php aqui-->
-                                <img src="img/trash.png" alt="Excluir" title="Excluir" class="excluir">    
-                            </a>   
+                            <td class="tblColunas registros"><?=$item['nome']?></td>
+                            <td class="tblColunas registros"><?=$item['celular']?></td>
+                            <td class="tblColunas registros"><?=$item['email']?></td>
+                            
+                            <!--inserção de img-->
+                            <td class="tblColunas registros"> <img src="<?=DIR_FILE_UPLOAD.$item['foto']?>" class="foto"> </td>
+                                        
+                            <td class="tblColunas registros">
 
-                            <img src="img/search.png" alt="Visualizar" title="Visualizar" class="pesquisar">
-                    </td>
+                                <!--icone editar-->
+                                <a href="arquivoDeRedirecionamento.php?identificador=contatos&action=buscar&id=<?=$item['id']?>">
+                                    <img src="img/edit.png" alt="Editar" title="Editar" class="editar">
+                                </a>
+                                <!--icone excluir-->
+                                <a onclick="return confirm('Deseja excluir este item?');" href="arquivoDeRedirecionamento.php?identificador=contatos&action=deletar&id=<?=$item['id']?>&foto=<?=$foto?>"> <!--manipulando id c/ php aqui-->
+                                    <img src="img/trash.png" alt="Excluir" title="Excluir" class="excluir">    
+                                </a>   
 
-                </tr>
-            <?php
-                //fechamento do foreach
-                }
+                                <img src="img/search.png" alt="Visualizar" title="Visualizar" class="pesquisar">
+                            </td>
+
+                        </tr>
+                <?php
+                    
+                       }//fechamento do foreach
+                    }//fechamento do if
+
             ?> 
             </table>
         </div>
