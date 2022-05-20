@@ -33,6 +33,13 @@
         
         break;
 
+        case   'ESTADOS':
+        
+            require_once('estadosApi/index.php');
+        
+        
+        break;
+
 
     }
 

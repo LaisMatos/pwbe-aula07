@@ -7,7 +7,8 @@
 *Versão: Herbert Richers (1.0)
 *********************************************************************************************************************/
 //import do arquivo de configuração do projeto
-require_once('modulo/config.php');
+require_once(SRC.'modulo/config.php');
+
 
 //fun recebe dados da View e encaminha para a model
 function inserirContatos($dadosContato,$file){
@@ -151,6 +152,7 @@ function atualizarContatos($dadosContato, $arrayDados){
         }
     }
 }
+
 //fun para realizar eclusão de dados de contatos
 function excluirContatos($arrayDados){
 
@@ -205,11 +207,12 @@ function excluirContatos($arrayDados){
     }
 
 }
+
 //fun solicita dados de model e encaminha a lista de contatos para a View
 function listarContatos(){
 
     //import do arquivo contatp.php para buscar os dados do banco de dados
-    require_once('model/bd/contato.php');
+    require_once(SRC.'model/bd/contato.php');
 
     //chama a função selectAllContatos(), que chamará os dados do banco de dados
     $dados= selectAllContato();
@@ -232,7 +235,7 @@ function buscarcontato($id){
     if ($id !=0 && !empty($id) && is_numeric($id)){
 
         //import do arquivo contato
-        require_once('model/bd/contato.php');
+        require_once(SRC.'model/bd/contato.php');
 
         //chamada de fun na model que vai bucar no bd
         $dados=selectByIdContato($id);
