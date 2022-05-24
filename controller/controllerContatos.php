@@ -166,34 +166,30 @@ function excluirContatos($arrayDados){
     if ($id !=0 && !empty($id) && is_numeric($id)) {
         
         //import do arquivo contato
-        require_once('model/bd/contato.php');
+        require_once(SRC.'model/bd/contato.php');
         
         //import do arquivo de configuração do projeto
-        require_once('modulo/config.php');
+        //require_once(SRC.'modulo/config.php');
         
         //chamando fun de model e validando retorno (true ou false)
         if(deleteContato($id)){
             if ($foto !=null) {
                 
                 //apaga a foto fisicamanete do diretório no servidor 
-              if  (unlink(DIR_FILE_UPLOAD.$foto)){
+              if  (@unlink(SRC.DIR_FILE_UPLOAD.$foto)){
                 return true;
               }else{
                     return array ( 'idErro'     => 5,
-                                    'message'   => 'o registro foi ........'
+                                    'message'   => ' O REGISTRO FOI EXCLUÍDO COM SUCESSO '
                     );
               }               
 
-            }
-            
-            
+            }            
+            //dentro do if
             else{
                 return true;
             }
-
-
-
-            
+         //fora do if   
         }else{
             return array ( 'idErro'     => 3,
                             'message'   => 'Não pode excluir registro'

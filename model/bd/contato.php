@@ -206,9 +206,13 @@ function selectByIdContato($id){
         }
  
          //solicita o fechamento da conexão como bd por motivos de segurança    
-         fecharConexaoMysql($conexao);
-         //retornando os dados do array
-         return $arrayDados;
+        fecharConexaoMysql($conexao);        
+        if (isset($arrayDados)) {
+             //retornando os dados do array
+             return $arrayDados;
+        }else{
+            return false;
+        }
     }
 
 }
