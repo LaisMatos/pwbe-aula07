@@ -8,9 +8,6 @@
 *Versão: Herbert Richers (1.0)
 ********************************************************************************************************************************************/
 
-
-
-
 //Receber dados do formulário
 $action =(string)null;
 $identificador= (string)null; 
@@ -18,6 +15,8 @@ $identificador= (string)null;
 //Validação para verificar se a requisição  é um post de um formulário
 if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
     /*echo('Requesição de form');*/
+
+    require_once("modulo/config.php");
 
     //Recebendo dados via url (get) e qual ação será realizada
     $identificador= strtoupper($_GET['identificador']);
@@ -34,10 +33,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                 
                
                 if (isset($_FILES) && !empty($_FILES)) {
+
+                    $arrayDados = array(
+                                $_POST,
+                                "file" => $_FILES
+                    );
                     //chama função de inserir na controller
-                    $resposta =inserirContatos($_POST,$_FILES);                    
+                    $resposta =inserirContatos($arrayDados);  
+
                 }else{
-                    $resposta =inserirContatos($_POST,null);
+
+                    $arrayDados = array(
+                        $_POST,
+                        "file" => null
+                    );
+
+                    $resposta =inserirContatos($arrayDados);
                 }
 
                 //(1): função inserirContatos($_POST) do arq controller
@@ -58,7 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                     echo("<script>
                         alert('".$resposta['message']."');
                         window.history.back();
-                    </script>");    
+                        </script>"
+                    );    
                     
                 }
             }elseif ($action =='DELETAR') {
@@ -70,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                 //array para encaminhar dois dados, id e foto, para controller
                 $arrayDados = array (
                     "id"    => $idContato,
-                    "foto"  => $foto
+                    "foto"  => $foto                    
                 );
 
                 //chamando fun deleteContato
@@ -89,7 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                     echo("<script>
                         alert('".$resposta['message']."');
                         window.history.back();
-                    </script>");    
+                        </script>"
+                    );    
                 }
             }elseif($action=='BUSCAR'){
                     
@@ -108,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
 
                 //import da index.php para ñ usar um link, onde ocorre a transição de maneira mais visivel piscando a tela
                 require_once('index.php');
+
             }elseif($action=='EDITAR'){
 
                 //recebe id que foi encaminhado no action do form pela url
@@ -117,13 +131,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
 
                 //array para encaminhar dois dados, id e foto, para controller
                 $arrayDados= array(
-                    $id     => $idContato,
-                    $foto   => $foto,
-                    $file   => $_FILES
+                    "id"     => $idContato,
+                    "foto"   => $foto,
+                    "file"   => $_FILES,
+                    $_POST
                 );
 
                 // chama função de editar na controller
-                $resposta=atualizarContatos($_POST, $arrayDados);
+                $resposta=atualizarContatos($arrayDados);
             
                  //(1): função atualizarContatos($_POST) do arq controller
                  //(2): validação do tipo de dados que a controller retornou
@@ -133,7 +148,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                     if ($resposta) {
                         //parte01: REDIRECIONANDO PARA PÁGINA INICIAL VIA JS usando <window.location.href='index.php>
                         echo("<script>alert('REGISTRO ATUALIZADO COM SUCESSO');
-                        window.location.href='index.php';</script>");     
+                            window.location.href='index.php';</script>"
+                        );     
                     }
  
                    //se retornar um array, então houve um erro de processo de atualização
@@ -143,17 +159,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD']=='GET') {
                     echo("<script>
                          alert('".$resposta['message']."');
                          window.history.back();
-                    </script>"); 
-
+                        </script>"
+                    ); 
                 }
-
-            }
-
-        
+            }        
         break;    
     }
-
-
 
 }
 

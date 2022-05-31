@@ -11,7 +11,7 @@ require_once(SRC.'modulo/config.php');
 
 
 //fun recebe dados da View e encaminha para a model
-function inserirContatos($dadosContato,$file){
+function inserirContatos($dadosContato){
    
     //declaração de variável fora de if de validação de arquivo para que não dê erro de autenticação para o banco
    $nomeFoto=(string) null;
@@ -19,15 +19,20 @@ function inserirContatos($dadosContato,$file){
     //validação, verificando se a variavel/obj está vazia
     if (!empty($dadosContato)) {
 
+         //Recebe o objeto imagem que foi caminhado dentro do array
+         $file = $dadosContato['file'];
+
         //validação se não estiver vazia a caixa <txtNome> e <txtCelular> e <txtEmail>, o bloco segue rodando. Dados obrigatórios.
-        if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail']) && !empty($dadosContato['sltEstado'])) {
+        if (!empty($dadosContato[0]['nome']) && !empty($dadosContato[0]['celular']) && !empty($dadosContato[0]['email']) && !empty($dadosContato[0]['estado'])) {
             
             //validação para identificar se chegou um arquivo para upload
-            if ($file['flefoto']['name'] != null) {
+            if ($file['foto']['name'] != null) {
                 
                 //import da função de upload 
-                require_once ('modulo/upload.php');
-                $nomeFoto = uploadFile($file['flefoto']);
+                require_once (SRC.'modulo/upload.php');
+                
+                //chama função upload
+                $nomeFoto = uploadFile($file['foto']);
 
                 //validação de insert de arquivo
                 if (is_array($nomeFoto)) {
@@ -42,20 +47,19 @@ function inserirContatos($dadosContato,$file){
                 OBS: CRIAR CHAVES-VALORES DO ARRAY CONFORME OS NOMES DOS ATRIBUTOS DO BANCO DE DADOS
                      Se não criar esse array todos os tipos de dado recebidos via post, até o valor do salvar botão, chegará no no bd  */
 
-
             $arrayDados = array(
-                "nome"          => $dadosContato['txtNome'],
-                "telefone"      => $dadosContato['txtTelefone'],
-                "celular"       => $dadosContato['txtCelular'],
-                "email"         => $dadosContato['txtEmail'],
-                "observacao"    => $dadosContato['txtObs'],
+                "nome"          => $dadosContato[0] ['nome'],
+                "telefone"      => $dadosContato[0] ['telefone'],
+                "celular"       => $dadosContato[0] ['celular'],
+                "email"         => $dadosContato[0] ['email'],
+                "observacao"    => $dadosContato[0] ['obs'],
                 "foto"          => $nomeFoto, //por ser uma variavel e ñ um post, o array tem essa estrutura
-                "idestado"      => $dadosContato['sltEstado']
+                "idestado"      => $dadosContato[0] ['estado']
             );
 
         
             //imput do contato.php está aqui para só chamar o arquivo contato.php depois de validar
-            require_once('model/bd/contato.php');
+            require_once(SRC.'model/bd/contato.php');
             
             //parte01: chamando a função insertContato() que está no aquivo contato.php e passa os dados do $arrayDados para alimentar o banco de dados --> insertContato($arrayDados);
             //parte02: tratamento de erro caso dado não tenha sido inserido no banco de dados 
@@ -72,34 +76,34 @@ function inserirContatos($dadosContato,$file){
 }
 
 // fun recebe recebe dados da View e encaminha para model (ATUALIZAÇÃO)
-function atualizarContatos($dadosContato, $arrayDados){
+function atualizarContatos($dadosContato){
 
     //varial para validação de delete da foto
     $statusUpload=(boolean)false;
     //Gambiarra para não alterrar o nome id pelo nome arrayDados. Recebe o id enviado pelo arrayDados;
-    $id=$arrayDados['id'];
+    $id=$dadosContato['id'];
     //recebe a foto enviada pelo arrayDados (Nome da foto que ja existe no BD)
-    $foto = $arrayDados ['foto'];
+    $foto = $dadosContato ['foto'];
     //recebe  o obj de array referente a nova foto que poderá ser enviada ao servidor 
-    $file= $arrayDados['file'];
+    $file= $dadosContato['file'];
 
 
     //validação, verificando se a variavel/obj está vazia
     if (!empty($dadosContato)) {
         //validação se não estiver vazia a caixa <txtNome> e <txtCelular> e <txtEmail>, o bloco segue rodando. Dados obrigatórios.
-        if (!empty($dadosContato['txtNome']) && !empty($dadosContato['txtCelular']) && !empty($dadosContato['txtEmail'])) {
+        if (!empty($dadosContato[0]['nome']) && !empty($dadosContato[0]['celular']) && !empty($dadosContato[0]['email'])) {
             
             //validação do id se ele for diferente de zero e diferente de vazio e tem que ser um numero 
             if(!empty($id) && $id !=0 && is_numeric($id)){
 
                 //validação para identificar se será enviado para o servidor uma nova foto
-                if ($file['flefoto']['name'] !=null) {
+                if ($file['foto']['name'] !=null) {
                     
                     //import da função de upload 
-                    require_once ('modulo/upload.php');
+                    require_once (SRC.'modulo/upload.php');
 
                     //chama a função upload para enviar a nova foto para o servidor 
-                    $novaFoto = uploadFile($file['flefoto']);   
+                    $novaFoto = uploadFile($file['foto']);   
                     $statusUpload=true;               
 
                 }else{
@@ -112,17 +116,17 @@ function atualizarContatos($dadosContato, $arrayDados){
                     Se não criar esse array todos os tipos de dado recebidos via post, até o valor do salvar botão, chegará no no bd */
                 $arrayDados = array(
                     "id"            => $id,
-                    "nome"          => $dadosContato['txtNome'],
-                    "telefone"      => $dadosContato['txtTelefone'],
-                    "celular"       => $dadosContato['txtCelular'],
-                    "email"         => $dadosContato['txtEmail'],
-                    "observacao"    => $dadosContato['txtObs'],
+                    "nome"          => $dadosContato[0] ['nome'],
+                    "telefone"      => $dadosContato[0] ['telefone'],
+                    "celular"       => $dadosContato[0] ['celular'],
+                    "email"         => $dadosContato[0] ['email'],
+                    "observacao"    => $dadosContato[0]['obs'],
                     "foto"          => $novaFoto,
-                    "idestado"      => $dadosContato['sltEstado']
+                    "idestado"      => $dadosContato[0] ['estado']
                 );
 
                 //imput do contato.php. importa está aqui para só chamar o arquivo contato.php depois de validar
-                require_once('model/bd/contato.php');
+                require_once(SRC.'model/bd/contato.php');
                 
                 //parte01: chamando a função insertContato() que está no aquivo contato.php e passa os dados do $arrayDados para alimentar o banco de dados -> insertContato($arrayDados);
                 //parte02: tratamento de erro caso dado não tenha sido inserido no banco de dados 
@@ -132,7 +136,7 @@ function atualizarContatos($dadosContato, $arrayDados){
                     quando realizamos o upload de uma nova foto para o servidor*/
                     if($statusUpload){
                         //apaga a foto antiga da pasta do servidor 
-                        unlink(DIR_FILE_UPLOAD.$foto);
+                        unlink(SRC.DIR_FILE_UPLOAD.$foto);
                     }
                     return true;
 
